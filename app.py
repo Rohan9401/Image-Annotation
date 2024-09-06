@@ -12,17 +12,21 @@ import os
 genai.configure(api_key = os.getenv("GOOGLE-API-KEY"))
 
 # Create the Streamlit Front End Page
+headers = {'authorization':st.secrets["GOOGLE-API-KEY"],
+           'content-type':'application/json'}
+
 st.set_page_config("Gemini APP")
 st.header("Image Annotation using Gemini Flash")
 input = st.text_input("Input Prompt: ", key = "input")
 
-uploaded_file = st.file_uploader(label = "Upload an Image...", type = ["jpeg", "jpg", "png"])
+uploaded_file = st.file_uploader(label = "Upload an Image...", 
+                                 type = ["jpeg", "jpg", "png"])
 
 
 # Let's define the Model and the Image Annotation
 def generate_response(input, image):
     model = genai.GenerativeModel("gemini-1.5-flash")
-    if input != "":
+    if image != "":
         response = model.generate_content([input, image])
     else:
         response = model.generate_content(input)
@@ -36,6 +40,7 @@ if uploaded_file is not None:
     
 
 submit = st.button("Do the Magic")
+
 if submit:
     response = generate_response(input, image)
     st.subheader("Response Generated is ...")
